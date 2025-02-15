@@ -1,0 +1,10 @@
+numpy 
+pandas
+tensorflow 
+evaluate 
+torch
+transformers
+scikit-learn
+tf-keras
+sentencepiece
+

@@ -1,0 +1,4 @@
+compvenv/
+*.pyc
+__pycache__/
+*.pkl
