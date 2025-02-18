@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Upload Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .upload-section {
+            margin-bottom: 20px;
+        }
+        .upload-section label {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .upload-section input[type="text"], .upload-section input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .upload-section button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upload-section button:hover {
+            background-color: #45a049;
+        }
+        .file-preview {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .file-preview img, .file-preview video {
+            max-width: 200px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Family Upload Portal</h1>
+    <div class="container">
+        <!-- Text Upload -->
+        <div class="upload-section">
+            <label for="story-text">Enter a text story:</label>
+            <input type="text" id="story-text" placeholder="Write a message or story...">
+            <button onclick="uploadText()">Upload Text</button>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="upload-section">
+            <label for="image-upload">Upload an image:</label>
+            <input type="file" id="image-upload" accept="image/*">
+            <button onclick="uploadImage()">Upload Image</button>
+            <div id="image-preview" class="file-preview"></div>
+        </div>
+
+        <!-- Video Upload -->
+        <div class="upload-section">
+            <label for="video-upload">Upload a video:</label>
+            <input type="file" id="video-upload" accept="video/*">
+            <button onclick="uploadVideo()">Upload Video</button>
+            <div id="video-preview" class="file-preview"></div>
+        </div>
+
+        <!-- Voice Recording -->
+        <div class="upload-section">
+            <label for="voice-recording">Record a voice message:</label>
+            <button onclick="startRecording()">Start Recording</button>
+            <button onclick="stopRecording()" id="stop-recording" disabled>Stop Recording</button>
+            <audio id="voice-message" controls></audio>
+            <div id="recording-status"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // Text Upload
+        function uploadText() {
+            const textInput = document.getElementById("story-text").value;
+            if (textInput) {
+                alert("Text Story Uploaded: " + textInput);
+                document.getElementById("story-text").value = ''; // Clear the text input after uploading
+            } else {
+                alert("Please enter a text story first.");
+            }
+        }
+
+        // Image Upload
+        function uploadImage() {
+            const imageInput = document.getElementById("image-upload");
+            const imagePreview = document.getElementById("image-preview");
+            imagePreview.innerHTML = ''; // Clear any previous previews
+            const file = imageInput.files[0];
+            if (file) {
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                imagePreview.appendChild(img);
+                alert("Image Uploaded!");
+            } else {
+                alert("Please select an image.");
+            }
+        }
+
+        // Video Upload
+        function uploadVideo() {
+            const videoInput = document.getElementById("video-upload");
+            const videoPreview = document.getElementById("video-preview");
+            videoPreview.innerHTML = ''; // Clear any previous previews
+            const file = videoInput.files[0];
+            if (file) {
+                const video = document.createElement("video");
+                video.src = URL.createObjectURL(file);
+                video.controls = true;
+                videoPreview.appendChild(video);
+                alert("Video Uploaded!");
+            } else {
+                alert("Please select a video.");
+            }
+        }
+
+        // Voice Recording
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function startRecording() {
+            document.getElementById("recording-status").textContent = "Recording in progress...";
+            document.getElementById("stop-recording").disabled = false;
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        document.getElementById("voice-message").src = audioUrl;
+                    };
+                    mediaRecorder.start();
+                })
+                .catch(err => {
+                    alert("Error accessing microphone: " + err);
+                });
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            document.getElementById("recording-status").textContent = "Recording stopped.";
+            document.getElementById("stop-recording").disabled = true;
+        }
+    </script>
+
+</body>
+</html>
