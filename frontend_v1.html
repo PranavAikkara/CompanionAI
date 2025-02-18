@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Voice Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        .button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #emotion {
+            font-size: 24px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        #response {
+            font-size: 20px;
+            margin-top: 15px;
+            color: #555;
+        }
+        #history {
+            margin-top: 20px;
+            max-width: 80%;
+            overflow-y: auto;
+            height: 200px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #history ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #history li {
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Smart Voice Assistant</h1>
+    <button class="button" id="start-recording">Start Speaking</button>
+
+    <div class="container">
+        <p id="emotion">Emotion: Detecting...</p>
+        <p id="response">Assistant: Please say something...</p>
+    </div>
+
+    <div id="history">
+        <h3>Conversation History</h3>
+        <ul id="conversation-log">
+            <!-- Conversation log will go here -->
+        </ul>
+    </div>
+
+    <script>
+        // Speech Recognition Setup
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+        
+        const startButton = document.getElementById("start-recording");
+        const emotionDisplay = document.getElementById("emotion");
+        const responseDisplay = document.getElementById("response");
+        const conversationLog = document.getElementById("conversation-log");
+
+        // Start Speech Recognition
+        startButton.addEventListener("click", function() {
+            recognition.start();
+            responseDisplay.textContent = "Assistant: Listening...";
+        });
+
+        recognition.onresult = function(event) {
+            const userSpeech = event.results[0][0].transcript;
+            emotionDisplay.textContent = "Emotion: Detecting...";
+
+            // Detect emotion (Dummy function, replace with actual model)
+            let detectedEmotion = "Neutral"; // This is where emotion detection logic goes
+            if (userSpeech.includes("happy")) {
+                detectedEmotion = "Happy";
+            } else if (userSpeech.includes("sad")) {
+                detectedEmotion = "Sad";
+            }
+
+            emotionDisplay.textContent = "Emotion: " + detectedEmotion;
+
+            // Assistant Response (Placeholder)
+            const assistantResponse = "I'm here for you!";
+            responseDisplay.textContent = "Assistant: " + assistantResponse;
+
+            // Log conversation
+            const newLog = document.createElement("li");
+            newLog.textContent = "You: " + userSpeech;
+            conversationLog.appendChild(newLog);
+            const assistantLog = document.createElement("li");
+            assistantLog.textContent = "Assistant: " + assistantResponse;
+            conversationLog.appendChild(assistantLog);
+        };
+
+        recognition.onerror = function(event) {
+            responseDisplay.textContent = "Assistant: Sorry, I couldn't understand that.";
+        };
+    </script>
+
+</body>
+</html>
